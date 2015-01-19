@@ -125,6 +125,7 @@ setup(
         'boto>=2.4.1',
         'tornado>=3.2',
         'colorlog',
+        'six>=1.9.0'
     ],
     extras_require={
         'GCS Deployment': ['google-api-python-client'],
