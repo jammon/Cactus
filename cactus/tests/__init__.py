@@ -1,7 +1,7 @@
 #coding:utf-8
+import os
 import tempfile
 import shutil
-import os
 
 try:
     import unittest2 as unittest

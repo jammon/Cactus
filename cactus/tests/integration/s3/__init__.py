@@ -1,5 +1,6 @@
 #coding:utf-8
 import os
+
 from cactus.deployment.s3.engine import S3DeploymentEngine
 
 from cactus.tests.integration import IntegrationTestCase, DebugHTTPSConnectionFactory
