@@ -1,4 +1,6 @@
 #coding:utf-8
+from __future__ import unicode_literals
+
 from six.moves import http_client, urllib
 
 from cactus.utils.helpers import CaseInsensitiveDict
@@ -17,7 +19,7 @@ class BaseTestHTTPConnection(object):
     def close(self):
         pass
 
-    def request(self, method, url, body='', headers=None):
+    def request(self, method, url, body=b'', headers=None):
         """
         Send a full request at once
         """
@@ -29,7 +31,7 @@ class BaseTestHTTPConnection(object):
         """
         Create a new request, but add more things to it later
         """
-        self.current_request = TestHTTPRequest(self, method, url, '', {})
+        self.current_request = TestHTTPRequest(self, method, url, b'', {})
         self.current_request.state = "headers"
 
     def putheader(self, header, value):
