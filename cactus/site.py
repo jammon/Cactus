@@ -46,12 +46,12 @@ class Site(SiteCompatibilityLayer):
     _parallel = PARALLEL_CONSERVATIVE  #TODO: Test me
     _static = None
 
-    def __init__(self, path, config_paths=None, ui=None,
-        PluginManagerClass=None, ExternalManagerClass=None, DeploymentEngineClass=None):
+    def __init__(self, path, config_paths=[], ui=ui_module,
+                 PluginManagerClass=PluginManager, 
+                 ExternalManagerClass=ExternalManager, 
+                 DeploymentEngineClass=None):
 
         # Load the config engine
-        if config_paths is None:
-            config_paths = []
         self.config = ConfigRouter(config_paths)
 
         # Load site-specific config values
@@ -65,12 +65,8 @@ class Site(SiteCompatibilityLayer):
         self.verify_path()
 
         # Load Managers
-        if ui is None:
-            ui = ui_module
         self.ui = ui
 
-        if PluginManagerClass is None:
-            PluginManagerClass =  PluginManager
         self.plugin_manager = PluginManagerClass(self,
             [
                 CustomPluginsLoader(self.plugin_path),  # User plugins
@@ -81,8 +77,6 @@ class Site(SiteCompatibilityLayer):
             ]
         )
 
-        if ExternalManagerClass is None:
-            ExternalManagerClass = ExternalManager
         self.external_manager = ExternalManagerClass(self)
 
         if DeploymentEngineClass is None:

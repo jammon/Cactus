@@ -22,26 +22,23 @@ class Page(PageCompatibilityLayer, ResourceURLHelperMixin):
         self.source_path = source_path
 
         # The URL where this element should be linked in "base" pages
-        self.link_url = '/{0}'.format(self.source_path)
+        self.link_url = '/' + self.source_path
+
+        # The URL where this element should be linked in "built" pages
+        self.final_url = self.link_url
+
+        # The path where this element should be built to
+        self.build_path = self.source_path
 
         if self.site.prettify_urls:
-            # The URL where this element should be linked in "built" pages
             if self.is_html():
                 if self.is_index():
-                    self.final_url = self.link_url.rsplit('index.html', 1)[0]
+                    self.final_url = self.link_url[:-len('index.html']  # chop 'index.html' off
                 else:
-                    self.final_url = '{0}/'.format(self.link_url.rsplit('.html', 1)[0])
-            else:
-                self.final_url = self.link_url
+                    self.final_url = self.link_url[:-len('.html')] + '/'  # chop '.html' off, add '/'
 
-            # The path where this element should be built to
-            if not self.is_html() or self.source_path.endswith('index.html'):
-                self.build_path = self.source_path
-            else:
+            if self.is_html() and not self.is_index()
                 self.build_path = '{0}/{1}'.format(self.source_path.rsplit('.html', 1)[0], 'index.html')
-        else:
-            self.final_url = self.link_url
-            self.build_path = self.source_path
 
     def is_html(self):
         return urlparse.urlparse(self.source_path).path.endswith('.html')
