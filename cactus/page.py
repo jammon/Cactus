@@ -11,8 +11,14 @@ from cactus.utils.helpers import memoize
 logger = logging.getLogger(__name__)
 
 
+class EXTENSIONS:
+    html = ['.html']
+    markdown = ['.md', '.mdown', '.markdown']
+    haml = ['.haml']
+    pages = html + markdown + haml
+
 class Page(PageCompatibilityLayer, ResourceURLHelperMixin):
-    
+
     discarded = False
 
     def __init__(self, site, source_path):
@@ -30,21 +36,36 @@ class Page(PageCompatibilityLayer, ResourceURLHelperMixin):
         # The path where this element should be built to
         self.build_path = self.source_path
 
+        path, ext = os.path.splitext(self.source_path.lower())
+        self._is_html = ext in EXTENSIONS.pages
+        self._is_index = path.endswith('index') and self._is_html
+        self._is_markdown = ext in EXTENSIONS.markdown
+        self._is_haml = ext in EXTENSIONS.haml
+
         if self.site.prettify_urls:
-            if self.is_html():
-                if self.is_index():
-                    self.final_url = self.link_url[:-len('index.html']  # chop 'index.html' off
+            if self._is_html:
+                if self._is_index:
+                    self.final_url = self.link_url[:-len('index.html')]  # chop 'index.html' off
                 else:
                     self.final_url = self.link_url[:-len('.html')] + '/'  # chop '.html' off, add '/'
-
-            if self.is_html() and not self.is_index()
-                self.build_path = '{0}/{1}'.format(self.source_path.rsplit('.html', 1)[0], 'index.html')
+                    self.build_path = '{0}/{1}'.format(
+                            self.source_path[:-len('.html')],
+                            'index.html')
 
     def is_html(self):
-        return urlparse.urlparse(self.source_path).path.endswith('.html')
+        """
+        True if page will be built to html
+        """
+        return self._is_html
 
     def is_index(self):
-        return urlparse.urlparse(self.source_path).path.endswith('index.html')
+        return self._is_index
+
+    def is_markdown(self):
+        return self._is_markdown
+
+    def is_haml(self):
+        return self._is_haml
 
     @property
     def absolute_final_url(self):
