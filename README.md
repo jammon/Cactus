@@ -131,6 +131,37 @@ Cactus uses the Django templates. They should be very similar to other templatin
 capabilities like inheritance. In a nutshell: a variable looks like this `{{ name }}` and a tag like this
 `{% block title %}Welcome{% endblock %}`. You can read the [full documentation][7] at the django site.
 
+### Markdown, HAML
+
+You are not limited to writing HTML and Django templates. If you prefer [markdown](http://daringfireball.net/projects/markdown/syntax) or [haml](http://haml.info/), just use it. Every file with extension `.md`, `.mdown` or `.markdown` is formatted using [Python Markdown2](https://github.com/trentm/python-markdown2). The result will be fed into the Django template machinery like this:
+
+    Input (text.md):
+    
+    This is **great** content
+
+    Output (text.html):
+    
+    {% extends "base.html" %}
+    {% block body %}
+    This is <strong>great</strong> content
+    {% endblock %}
+
+Optionally you can pass a `template` and `block` variable in the context to override the defaults.
+
+    Input (text.md):
+    
+    template: blogpost.html
+    block: post
+    This is **great** content
+
+    Output (text.html):
+    
+    {% extends "blogpost.html" %}
+    {% block post %}
+    This is <strong>great</strong> content
+    {% endblock %}
+
+HAML files (`*.haml`) are formatted using HAMLs own templating system. You are free to pass a `template` and `block` as context variable to integrate HAML files into the sites design and structure.
 
 ### Enabling Plugins
 
