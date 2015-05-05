@@ -83,11 +83,18 @@ class Page(PageCompatibilityLayer, ResourceURLHelperMixin):
         return os.path.join(self.site.build_path, self.build_path)
 
     def data(self):
-        with open(self.full_source_path, 'rU') as f:
+        self._is_binary = False
+        with open(self.full_source_path, 'rb') as f:
             try:
-                return f.read().decode('utf-8')
-            except:
-                logger.warning("Template engine could not process page: %s", self.path)
+                _data = f.read()
+                _data = _data.decode('utf-8')
+            except IOError:
+                logger.error("File %s could not be read", self.full_source_path)
+                return None
+            except UnicodeDecodeError:
+                self._is_binary = True
+
+        return _data
 
     def context(self, data=None, extra=None):
         """
@@ -112,6 +119,10 @@ class Page(PageCompatibilityLayer, ResourceURLHelperMixin):
         """
 
         data = self.data()
+
+        if self._is_binary:
+            return data
+
         context = self.context(data=data)
 
         # This is not very nice, but we already used the header context in the
@@ -138,8 +149,9 @@ class Page(PageCompatibilityLayer, ResourceURLHelperMixin):
             except OSError:
                 pass
 
-            with open(self.full_build_path, 'w') as f:
-                f.write(data.encode('utf-8'))
+            with open(self.full_build_path, 'wb') as f:
+                f.write(data if self._is_binary
+                        else data.encode('utf-8'))
 
             self.site.plugin_manager.postBuildPage(self)
 

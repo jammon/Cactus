@@ -41,10 +41,15 @@ class TestBuild(SiteTestCase):
 
     def test_pages_binary_file(self):
 
+        content = os.urandom(1024)
         with open(os.path.join(self.site.page_path, 'file.zip'), "wb") as f:
-            f.write(os.urandom(1024))
+            f.write(content)
 
         self.site.build()
+        built_path = os.path.join(self.site.build_path, 'file.zip')
+        self.assertFileExists(built_path)
+        with open(built_path, 'rb') as f:
+            self.assertEqual(f.read(), content)
 
     def test_listener_ignores(self):
 
